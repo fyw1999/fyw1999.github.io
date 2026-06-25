@@ -1,42 +1,18 @@
-const navToggle = document.querySelector(".nav-toggle");
+const toggle = document.querySelector(".nav-toggle");
 const nav = document.querySelector(".site-nav");
-const navLinks = [...document.querySelectorAll(".site-nav a")];
-const sections = [...document.querySelectorAll("main section[id]")];
 
-function closeNavigation() {
-  if (navToggle) navToggle.setAttribute("aria-expanded", "false");
-  if (nav) nav.classList.remove("open");
-}
+if (toggle && nav) {
+  toggle.addEventListener("click", () => {
+    const open = nav.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+  });
 
-if (navToggle) {
-  navToggle.addEventListener("click", () => {
-    const isOpen = navToggle.getAttribute("aria-expanded") === "true";
-    navToggle.setAttribute("aria-expanded", String(!isOpen));
-    if (nav) nav.classList.toggle("open", !isOpen);
+  nav.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      nav.classList.remove("open");
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Open navigation");
+    });
   });
 }
-
-navLinks.forEach((link) => link.addEventListener("click", closeNavigation));
-
-const sectionObserver = new IntersectionObserver(
-  (entries) => {
-    const visible = entries
-      .filter((entry) => entry.isIntersecting)
-      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-    if (!visible) return;
-
-    navLinks.forEach((link) => {
-      link.classList.toggle("active", link.hash === `#${visible.target.id}`);
-    });
-  },
-  {
-    rootMargin: "-20% 0px -65% 0px",
-    threshold: [0, 0.2, 0.5],
-  }
-);
-
-sections.forEach((section) => sectionObserver.observe(section));
-
-const year = document.querySelector("#year");
-if (year) year.textContent = new Date().getFullYear();
